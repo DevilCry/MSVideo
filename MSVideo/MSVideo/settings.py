@@ -12,7 +12,14 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
+TEMPLATE_DIRS =(
+    os.path.join(os.path.dirname(__file__), 'templates').replace('\\','/'),
+)
+STATICFILES_DIRS=(
+    os.path.join(BASE_DIR,'static').replace('\\','/'),
+    'G:/Project/MSVideo/MSVideo/MSVideo/static',
+)
+STATIC_URL = '/static/'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -36,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'vis',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,8 +66,12 @@ WSGI_APPLICATION = 'MSVideo.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':'msdata',
+        'USER':'root',
+        'PASSWORD':'123456',
+        'HOST':'localhost',
+        'PORT':'3306',
     }
 }
 
