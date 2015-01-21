@@ -67,9 +67,9 @@ WSGI_APPLICATION = 'MSVideo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'msdata',
-        'USER':'root',
-        'PASSWORD':'123456',
+        'NAME':'yzbx',
+        'USER':'yzbx',
+        'PASSWORD':'',
         'HOST':'localhost',
         'PORT':'3306',
     }
