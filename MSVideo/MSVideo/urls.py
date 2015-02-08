@@ -8,5 +8,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^test/$',test)
+    url(r'^test/$',test),
+    url(r'^get_data/$',getData),
+    url(r'^tree/$',tree),
+    url(r'^sunburst/$',sunburst)
 )

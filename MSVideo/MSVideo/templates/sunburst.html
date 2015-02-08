@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block css %}
+            <link rel="stylesheet" href="{{STATIC_URL}}css/sunburst.css">
+{% endblock %}
+{% block mainbody %}
+    <div id="sunbrust"></div>
+{% endblock %}
+{% block js%}
+  <script src="{{STATIC_URL}}js-self/sunburst.js"></script>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block css %}
+            <link rel="stylesheet" href="{{STATIC_URL}}css/tree_test.css">
+{% endblock %}
+{% block mainbody %}
+<style>
+
+.tab-content {
+  font: 10px sans-serif;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+<script>
+
+var data = [
+  [new Date(2001, 0, 1), 1],
+  [new Date(2002, 0, 1), 2],
+  [new Date(2003, 0, 1), 2],
+  [new Date(2004, 0, 1), 3],
+  [new Date(2005, 0, 1), 4],
+  [new Date(2006, 0, 1), 5]
+];
+var data2 = [
+  [new Date(2001, 0, 1), 5],
+  [new Date(2002, 0, 1), 3],
+  [new Date(2003, 0, 1), 2],
+  [new Date(2004, 0, 1), 3],
+  [new Date(2005, 0, 1), 1],
+  [new Date(2006, 0, 1), 2]
+  ];
+var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+ var line = d3.svg.line()
+    .interpolate("monotone")
+    .x(function(d) { return x(d[0]); })
+    .y(function(d) { return y(d[1]); });
+
+ var svg = d3.select(".tab-content").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+function axis()
+{
+var x = d3.time.scale()
+    .domain([new Date(2001, 0, 1), new Date(2006, 0, 1)])
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .domain([0, 6])
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+}
+function addPath(d)
+{
+svg.append("path")
+    .attr("class", "line")
+    .attr("d", line(d));
+}
+function addDot(data)
+{
+svg.selectAll(".dot")
+    .data(data)
+  .enter().append("circle")
+    .attr("class", "dot")
+    .attr("cx", line.x())
+    .attr("cy", line.y())
+    .attr("r", 3.5);
+}
+axis();
+addPath(data);
+addPath(data2);
+var final = data.concat(data2);
+addDot(final);
+
+</script>
+
+{% endblock %}
+{% block js%}
+    <!--<script src="{{STATIC_URL}}js-self/tree_learn.js"></script>-->
+{% endblock %}

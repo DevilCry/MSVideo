@@ -1,0 +1,104 @@
+      #map-container {
+            height: 580px;
+       }
+
+      #videolist{
+            overflow-y:auto;
+            overflow-x:hidden;
+            height:500px;
+            width:150px;
+      }
+
+
+      	.node {
+            cursor: pointer;
+        }
+
+      .overlay{
+          background-color:#fff;
+      }
+
+      .node circle {
+        fill: #eee;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+      }
+
+      .node text {
+        font-size:10px;
+        font-family:sans-serif;
+      }
+
+      .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 2.5px;
+      }
+
+      .templink {
+        fill: none;
+        stroke: red;
+        stroke-width: 3px;
+      }
+
+      .ghostCircle.show{
+          display:block;
+      }
+
+      .ghostCircle, .activeDrag .ghostCircle{
+           display: none;
+      }
+
+#sidebar >ul li:hover a{
+  background: #428bca;
+  color: white;
+}
+
+#chart .chartBar {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+#chart .chartBar:hover
+{
+    background-color:cyan;
+    color: red;
+}
+#tree-container
+{
+    margin:0;
+}
+.axis path, line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 5px;
+}
+
+.dot {
+  fill: white;
+  stroke: steelblue;
+  stroke-width: 5px;
+}
+.line:hover
+{
+    stroke-width:7px;
+}
+path.slice{
+	stroke-width:2px;
+}
+
+polyline{
+	opacity: .6;
+	stroke: black;
+	stroke-width: 2px;
+	fill: none;
+}
