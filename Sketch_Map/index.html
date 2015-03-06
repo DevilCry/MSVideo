@@ -57,15 +57,58 @@
 <!--读取文件并展示-->
 <script src="js/ReadFile.js"></script>
 <!--各种功能函数-->
+<script src="js/yzbx.js"></script>
 <script>
     var     menuLeft = document.getElementById( 'cbp-spmenu-s2' ),
             showLeftPush = document.getElementById( 'OK' ),
             body = document.body;
     showLeftPush.onclick = function() {
         classie.toggle( this, 'active' );
+		
         classie.toggle( body, 'cbp-spmenu-push-toleft' );
         classie.toggle( menuLeft, 'cbp-spmenu-open' );
-        create_button(3);
+		
+		console.log("show the path .................................");
+		//显示路径数目并创建相应的按钮
+		if(cnt==2&&Nu[0]<Nu[1]){
+			var pointNum=dataEvent.length;
+			var timeManPathArray=getTimeLinePath(Nu,Na,dataLines,pointNum,dataRoler)
+			
+			create_button(timeManPathArray.length);
+			d3.select("div.dialog-inner").select("h2").text("<strong>查询</strong>共有"+timeManPathArray.length+"条路径");
+			
+			//显示路径
+			d3.selectAll("button.path")
+			.data(timeManPathArray)
+			.on("click",function(d){
+				//d 为某条时间线路径
+				//g.selectAll("path.time").attr("display","none");
+				g.selectAll("path.spot").attr("display","none");
+				
+				console.log("显示路径 d is "+d);
+				for (var i=0;i<d.length;i++)
+				{
+					console.log(d[i]);
+				}
+				//var timevalue=getTimeLineValue(dataLine,d);
+				//console.log("time value is "+timevalue);
+				//dateLines 时间人物线， dataLine 时间线
+				var timeManValueArray=getTimeManValueArray(dataLines,d,Na);
+				console.log("timeManValueArray is "+timeManValueArray);
+				console.log("Na is "+Na);
+				g.selectAll("path.spot")
+					.data(timeManValueArray)
+					.attr("display",function(d){
+						if(d==0) return "none";
+						else return "block";
+					});
+			});
+		}
+		else{
+			//提示出错：请选择两个点进行查询
+			d3.select("div.dialog-inner").select("h2").text("<strong>请选择两个点进行查询</strong>");
+		}
+		//create_button(3);
     };
     var shows=function(){
         setvalue();
@@ -87,7 +130,7 @@
         var str="";
         str+="<h3"+">Menu<"+"/h3>";
         for(var i=1;i<=arr;i++){
-            str+='<button  id="no'+i+'" >'+'路径'+i+"<"+'/'+"button>";
+            str+='<button  class="path" id="no'+i+'" >'+'路径'+i+"<"+'/'+"button>";
         }
     str+='<button  id='+"close" +'>'+'关闭'+"<"+'/'+"button>";
 

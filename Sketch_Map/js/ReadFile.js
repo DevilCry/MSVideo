@@ -115,8 +115,8 @@ d3.json("json//Geo.json", function(error, root) {
         .attr("width", 20)
         .attr("height", 20)
         .on("mouseover", function (d, i, e) {
-            var xPosition=parseFloat(d3.select(this).attr("x"))+xScale.rangeBand()/2;
-            var yPosition=parseFloat(d3.select(this).attr("y"))/2+h/2;
+            var xPosition=parseFloat(d3.event.x);
+            var yPosition=parseFloat(d3.event.y);
 
             d3.select("#tooltip")
                 .style("left",xPosition+"px")
@@ -166,7 +166,8 @@ d3.json("json//Geo.json", function(error, root) {
                 .attr("height", 40)
                 .attr("class", "choose");
             cnt = cnt + 1;
-        });
+			
+		});
 });
 
 //放大缩小
