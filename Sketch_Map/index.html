@@ -44,7 +44,7 @@
 <div id="player" class="show" style="position:absolute;right:80;top:200; opacity:1;visibility:hidden;width: 640px; height: 264px;">
     <video id="pp" poster="pic/01-01.jpg"  controls="controls" src="video/1.mp4" type="video/mp4" />
 </div>
-<div ><button data-dialog="somedialog" class="trigger" id="showLeftPush" style= "position:absolute;right:200;top:200;" >查询</button></div>
+<div ><button data-dialog="somedialog" class="trigger" id="showLeftPush" style= "position:absolute;right:200;top:200;" onclick="find()">查询</button></div>
 <div ><button data-dialog="somedialog" class="trigger" id="showSpecial" style= "position:absolute;right:200;top:400;" onclick="shows()">展示</button></div>
 <div ><button data-dialog="somedialog" class="trigger" id="reset" style= "position:absolute;right:200;top:300;" onclick="resets()">重置</button></div>
 <div id="tooltip" class="hildden">
@@ -67,7 +67,26 @@
 		
         classie.toggle( body, 'cbp-spmenu-push-toleft' );
         classie.toggle( menuLeft, 'cbp-spmenu-open' );
-		
+		//create_button(3);
+    };
+    var shows=function(){
+        setvalue();
+        g.selectAll("image.circle").attr("display", function (d) {
+            var result=checkdis(d);
+        return result;});
+        g.selectAll("path.spot").attr("display",function(d){
+            var result=checkdis(d);
+            return result;});
+    };
+    /*(function() {
+        var dlgtrigger = document.querySelector( '[data-dialog]' ),
+                somedialog = document.getElementById( dlgtrigger.getAttribute( 'data-dialog' ) ),
+                dlg = new DialogFx( somedialog );
+        dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
+
+    })();
+	*/
+	var find=function(){
 		console.log("show the path .................................");
 		//显示路径数目并创建相应的按钮
 		if(cnt==2&&Nu[0]<Nu[1]){
@@ -75,7 +94,8 @@
 			var timeManPathArray=getTimeLinePath(Nu,Na,dataLines,pointNum,dataRoler)
 			
 			create_button(timeManPathArray.length);
-			d3.select("div.dialog-inner").select("h2").text("<strong>查询</strong>共有"+timeManPathArray.length+"条路径");
+			//d3.select("div.dialog-inner").select("h2").text("共有"+timeManPathArray.length+"条路径");
+			//classie.toggle( this, 'active' );
 			
 			//显示路径
 			d3.selectAll("button.path")
@@ -98,6 +118,7 @@
 				console.log("Na is "+Na);
 				g.selectAll("path.spot")
 					.data(timeManValueArray)
+					.attr("stroke","red")
 					.attr("display",function(d){
 						if(d==0) return "none";
 						else return "block";
@@ -106,26 +127,19 @@
 		}
 		else{
 			//提示出错：请选择两个点进行查询
-			d3.select("div.dialog-inner").select("h2").text("<strong>请选择两个点进行查询</strong>");
+			//d3.select("div.dialog-inner").select("h2").text("<strong>请选择两个点进行查询</strong>");
 		}
-		//create_button(3);
-    };
-    var shows=function(){
-        setvalue();
-        g.selectAll("image.circle").attr("display", function (d) {
-            var result=checkdis(d);
-        return result;});
-        g.selectAll("path.spot").attr("display",function(d){
-            var result=checkdis(d);
-            return result;});
-    };
-    (function() {
-        var dlgtrigger = document.querySelector( '[data-dialog]' ),
+		
+		 var dlgtrigger = document.querySelector( '[data-dialog]' ),
                 somedialog = document.getElementById( dlgtrigger.getAttribute( 'data-dialog' ) ),
                 dlg = new DialogFx( somedialog );
         dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
-
-    })();
+		
+		//classie.toggle( this, 'active' );
+		
+        classie.toggle( document.body, 'cbp-spmenu-push-toleft' );
+        classie.toggle( menuLeft, 'cbp-spmenu-open' );
+	}
     function create_button(arr){
         var str="";
         str+="<h3"+">Menu<"+"/h3>";
