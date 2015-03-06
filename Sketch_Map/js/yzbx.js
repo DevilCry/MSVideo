@@ -7,8 +7,7 @@ srcName: Na[0]
 desName: Na[1]
 函数用途：将每个事件点对应到二进制数 00(No src,No des),01(no src,des),10(src,no des),11(src,des)
 函数结果：返回所有事件点对应的二进制数
-
-*/
+//已弃用，因为lines并不能由点的信息推断出来
 function point2value(pointNum,Points,srcName,desName)
 {
 	console.log("pointNum is "+pointNum);
@@ -35,11 +34,12 @@ function point2value(pointNum,Points,srcName,desName)
 	return pointValue; 
 }
 
+*/
+
 /*
 pointValue: 每个事件点对应的二进制数组
 path: 不考虑人物对应时的路径
 这个函数用来检查路径是否合法，并不打算用,因为先检查边可以加快计算速度
-*/
 function checkPath(path,pointValue)
 {
 	var a=10;
@@ -53,6 +53,8 @@ function checkPath(path,pointValue)
 	
 	return true;
 }
+
+*/
 
 /*
 pointNum: dataEvent.length
@@ -68,21 +70,20 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 {
 	var m=Nu[1]-Nu[0]+1;
 	if(m<2){
-		console.log("请确保调用着Nu[1]>Nu[0]");
+		console.log("请确保调用前满足 Nu[1]>Nu[0]");
 		return;
 	}
 	
-	var edgeMatrix=new Array(Nu[1]-Nu[0]+1);		//the edge for dfs, [src,des,length]
-	for(var i=0;i<Nu[1]-Nu[0]+1;i++)
-	{
-		edgeMatrix[i]=new Array(Nu[1]-Nu[0]+1);
-	}
+	var edgeMatrix=new Array();		//the edge for dfs, [src,des,length]
+	//console.log("init edgeMatrix ");
 	for(var i=0;i<m;i++)
 	{
+		edgeMatrix[i]=new Array();
 		for(var j=0;j<m;j++)
 		{
 			edgeMatrix[i][j]=0;
 		}
+		//console.log(edgeMatrix[i]);
 	}
 	
 	var pathSet=new Array(); 	//save the path of timeManPath
@@ -93,7 +94,7 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 	var s,e,i,sp,bsp,tmpPoint,oldsp;
 	var branchNum=[];
 	//des > src
-	var pointValue=point2value(pointNum,Points,Na[0],Na[1]);
+	//var pointValue=point2value(pointNum,Points,Na[0],Na[1]);
 	//console.log("pointValue is "+pointValue);
 	
 	for(i=0;i<timeManEdgeArray.length;i++)
@@ -102,8 +103,8 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 		e=timeManEdgeArray[i].e;
 		
 		//if(s>=src&&e<=des)
-		if(pointValue[s]&pointValue[e]){
-			if(s>=src && e<=des)
+		if(s>=src &&s<e&& e<=des){
+			if(timeManEdgeArray[i].name==Na[0])//pointValue[s]&pointValue[e]
 			{
 				/*
 				edge.push(s);
@@ -113,16 +114,19 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 				else edge.push(2);
 				edge.push(timeManEdgeArray[i].name);
 				*/
-				edgeMatrix[s-src][e-src]=1;
-			}		
+				edgeMatrix[s-src][e-src]=edgeMatrix[s-src][e-src]|1;
+			}
+			else if(timeManEdgeArray[i].name==Na[1]&&Na[0]!=Na[1]){
+				edgeMatrix[s-src][e-src]=edgeMatrix[s-src][e-src]|2;
+			}
 		}	
 	}
 	
 	
-	console.log("src: "+src+"des: "+des);
+	console.log("src: "+src+" des: "+des);
 	console.log("srcName: "+Na[0]+"desName: "+Na[1]);
-	console.log("pointValue: "+pointValue);
-	console.log("edgeMatrix: ");
+	//console.log("pointValue: "+pointValue);
+	console.log("set edgeMatrix: ");
 	for(var i=0;i<m;i++)
 	{
 		console.log(edgeMatrix[i]);
@@ -147,9 +151,9 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 		
 		tmpPath.push(tmpPoint);
 
-		for(var j=0;j<m;j++)
+		for(var j=tmpPoint-src+1;j<m;j++)
 		{
-			if(edgeMatrix[tmpPoint-src][j]==1)
+			if(edgeMatrix[tmpPoint-src][j]>0)
 			{
 				if(j<m-1)
 				{
@@ -159,7 +163,7 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 				else if(j==m-1)
 				{
 					var path=new Array();
-					console.log("find path :");
+					
 					for(var k=0;k<tmpPath.length;k++)
 					{
 						var edge=new Array(3);
@@ -169,12 +173,13 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 						
 						if(Na[0]==Na[1])	edge[2]=1;	//如果是同一人，则只有一种情况
 						else {
-							edge[2]=(pointValue[edge[0]]&pointValue[edge[1]]);
+							//edge[2]=(pointValue[edge[0]]&pointValue[edge[1]]);
+							edge[2]=edgeMatrix[edge[0]-src][edge[1]-src];
 						}
 						//edge[2]=pointValue[edge[0]]&pointValue[edge[1]];
 						path.push(edge);
 						
-						console.log(edge);
+					
 					}
 					
 					pathSet.push(path);
@@ -201,6 +206,7 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 		}
 	}
 	
+	//console.log("pathSet "+pathSet);
 	//将时间联系路径细化为时间人物联系路径
 	//当路径中出线连续的边时，将产生新的路径
 	var a,b;
@@ -213,7 +219,6 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 		for(var i=0;i<timeManPathArray.length;i++)
 		{
 			//var timeManPath=timeManPathArray[i];
-			console.log("timeManPathArray.length is "+timeManPathArray.length);
 			for(var j=0;j<timeManPathArray[i].length;j++)
 			{
 				if(timeManPathArray[i][j][2]==3){
@@ -229,17 +234,11 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 					}
 					
 					timeManPathArray[i][j][2]=1;
-					//console.log("xxxxx type is "+timeManPathArray[i][j][2]);
+					
 					//timeManPathArray[i][j][2]=1;
 					tmpPath[j][2]=2;
 					
 					timeManPathArray.push(tmpPath);
-					console.log("tmpPath "+timeManPathArray.length+" is :");
-					for(var k=0;k<tmpPath.length;k++)
-					{
-						console.log(tmpPath[k]);
-					}
-					
 					
 					flag=true;
 				}
@@ -247,6 +246,8 @@ function getTimeLinePath(Nu,Na,timeManEdgeArray,pointNum,Points)
 		}
 	}
 	
+	
+	console.log("timeManPathArray is ........");
 	for(var i=0;i<timeManPathArray.length;i++)
 	{
 		console.log("the path "+i+" is :");

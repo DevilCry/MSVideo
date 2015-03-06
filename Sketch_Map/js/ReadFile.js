@@ -167,6 +167,7 @@ d3.json("json//Geo.json", function(error, root) {
                 .attr("class", "choose");
             cnt = cnt + 1;
 			
+			console.log(d.name+d.number);
 		});
 });
 
