@@ -114,17 +114,38 @@
 				}
 				//var timevalue=getTimeLineValue(dataLine,d);
 				//console.log("time value is "+timevalue);
-				//dateLines 时间人物线， dataLine 时间线
-				var timeManValueArray=getTimeManValueArray(dataLines,d,Na);
-				console.log("timeManValueArray is "+timeManValueArray);
+				//dataRoler 事件角色点的集合
+				//timeManValueArray={from,to,rolerNum}
+				var timeManLineArray=getTimeManValueArray(dataRoler,d,Na);
+				//console.log("timeManValueArray is "+timeManValueArray);
 				console.log("Na is "+Na);
-				g.selectAll("path.spot")
-					.data(timeManValueArray)
-					.attr("stroke","red")
-					.attr("display",function(d){
-						if(d==0) return "none";
-						else return "block";
-					});
+				g.selectAll("path.timeMan").remove();
+				
+				g.selectAll("path.timeMan")
+					.data(timeManLineArray[0])
+					.enter()
+					.append("path")
+					.attr("class","timeMan")
+					.attr("stroke-width", 1)
+					.attr("fill", "none")
+					.attr("d", path);
+					
+				g.selectAll("path.timeMan")
+					.data(timeManLineArray[1])
+					.attr("stroke",function(d){
+						if(d==1){
+							return color(Nam(Na[0]));
+						}
+						else if(d==2)
+						{
+							return color(Nam(Na[1]));
+						}
+						else{	//d.rolerNum==3
+							return color(19);	//最后一种颜色
+							//return "red";
+						}
+					})
+					.attr("display","block");
 			});
 			
 			/*

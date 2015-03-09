@@ -280,32 +280,121 @@ function getTimeLineValue(timeline,timepath)
 	return timevalue;
 }
 */
+
 /*
-timeManLineArray: datalines,时间人物线数组
-timeManPath: d,时间人物联系路径
-nameArray: Na, Na[0]为src name, Na[1]为des name
-timeManValueArray: 是否显示时间人物线的标志
+eventNum: 事件编号
+rolerName: 角色名称
+eventManPointArray: 对应Geo.json 中的Points 属性，对应ReadFill.js中的dataRoler
+返回相应角色在事件中的位置
 */
-function getTimeManValueArray(timeManLineArray,timeManPath,nameArray)
+function getCoordinates(eventNum,rolerName,eventManPointArray)
 {
-	var timeManValueArray=new Array(timeManLineArray.length);
-	
-	for(var i=0;i<timeManLineArray.length;i++)
+	for(var i=0;i<eventManPointArray.length;i++)
 	{
-		timeManValueArray[i]=0;
-		for(var j=0;j<timeManPath.length;j++)
+		if(eventManPointArray[i].number==eventNum&&eventManPointArray[i].name==rolerName)
 		{
-			//var timeManEdge=timeManPath[j];
-			if(timeManLineArray[i].s==timeManPath[j][0]&&timeManLineArray[i].e==timeManPath[j][1]&&
-				timeManLineArray[i].name==nameArray[timeManPath[j][2]-1])
-				{
-					timeManValueArray[i]=1;
-					break;
-				}
+			return eventManPointArray[i].coordinates;
 		}
 	}
 	
-	return timeManValueArray;
+	console.log("error: unexpected number and name in Points!");
+	return [0,0];
+}
+
+/*
+eventManPointArray: dataRoler,事件人物点数组
+timeManPath: d,时间人物联系路径
+nameArray: Na, Na[0]为src name, Na[1]为des name
+timeManValueArray: 是否显示时间人物线的标志
+
+return 0 表示不显示
+return 1 表示显示并令颜色为srcname 对应的color(Nam(srcname))
+return 2 表示显示并令颜色为desname 对应的color(Nam(desname))
+return 3 表示显示并令其颜色为混合颜色
+
+*/
+
+function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
+{
+	//   {"s":1,"e":3,"len":3,"type":"LineString","coordinates":[[86.64466985700005,22.546933554000077],[96.06690781900005,20.561954826000033]]},
+	var timeManValueArray=new Array();
+	var colorArray=[];
+	var line;
+	var from,to;
+	
+	if(timeManPath[0][2]!=1)
+	{
+		line=new Object();
+		line.type="LineString";
+		from=getCoordinates(timeManPath[0][0],nameArray[0],eventManPointArray);
+		to=getCoordinates(timeManPath[0][0],nameArray[1],eventManPointArray);
+		line.coordinates=[from,to];
+		
+		timeManValueArray.push(line);
+		colorArray.push(3);
+	}
+	
+	for(var j=0;j+1<timeManPath.length;j++)
+	{
+		//var timeManEdge=timeManPath[j];
+		/*
+		if(timeManLineArray[i].s==timeManPath[j][0]&&timeManLineArray[i].e==timeManPath[j][1]&&
+			timeManLineArray[i].name==nameArray[timeManPath[j][2]-1])
+			{
+				timeManValueArray[i]=1;
+				break;
+			}
+			*/
+		
+		line=new Object();
+		line.type="LineString";
+		from=getCoordinates(timeManPath[j][0],nameArray[timeManPath[j][2]-1],eventManPointArray);
+		to=getCoordinates(timeManPath[j][1],nameArray[timeManPath[j][2]-1],eventManPointArray);
+		line.coordinates=[from,to];
+		timeManValueArray.push(line);
+		colorArray.push(timeManPath[j][2]);
+		
+		if(timeManPath[j][2]!=timeManPath[j+1][2])
+		{
+			line=new Object();
+			line.type="LineString";
+			from=getCoordinates(timeManPath[j][1],nameArray[2-timeManPath[j][2]],eventManPointArray);
+			to=getCoordinates(timeManPath[j][1],nameArray[timeManPath[j][2]-1],eventManPointArray);
+			line.coordinates=[from,to];
+			timeManValueArray.push(line);
+			colorArray.push(3);
+		}
+	}
+	
+	line=new Object();
+	line.type="LineString";
+	from=getCoordinates(timeManPath[j][0],nameArray[timeManPath[j][2]-1],eventManPointArray);
+	to=getCoordinates(timeManPath[j][1],nameArray[timeManPath[j][2]-1],eventManPointArray);
+	line.coordinates=[from,to];
+	timeManValueArray.push(line);
+	colorArray.push(timeManPath[j][2]);
+		
+	if(timeManPath[j][2]!=2)
+	{	
+		line=new Object();
+		line.type="LineString";
+		from=getCoordinates(timeManPath[j][1],nameArray[0],eventManPointArray);
+		to=getCoordinates(timeManPath[j][1],nameArray[1],eventManPointArray);
+		line.coordinates=[from,to];
+		timeManValueArray.push(line);
+		colorArray.push(3);
+	}
+	
+	console.log("timeManValueArray is ........");
+	for(var i=0;i<timeManValueArray.length;i++)
+	{
+		console.log("timeManValueArray "+i+" is :"+timeManValueArray[i].type+" "+timeManValueArray[i].coordinates+" colorArray is "+colorArray[i]);
+	}
+	
+	timeManLineArray=[];
+	timeManLineArray.push(timeManValueArray);
+	timeManLineArray.push(colorArray);
+	return timeManLineArray;
 }
 
 /*
