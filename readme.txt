@@ -1,52 +1,59 @@
-ÔËĞĞ²½Öè£º
+##d3
+1. ç½‘é¡µæ•ˆæœè§ï¼šhttp://124.16.139.68/MSVideo/Sketch_Map
+2. åœ¨å±€åŸŸç½‘tplink-yzbxä¸­ï¼ŒæŸ¥çœ‹ç½‘å€ä¸º http://192.168.1.102/MSVideo/Sketch_Map
+
+
+##Django
+######################################################################################### 
+è¿è¡Œæ­¥éª¤ï¼š
 1. python manage.py createsuperuser
-ÒÀ¾İ±¾»ú»·¾³£¬ĞŞ¸ÄÊı¾İ¿âÅäÖÃsettings.py
+ä¾æ®æœ¬æœºç¯å¢ƒï¼Œä¿®æ”¹æ•°æ®åº“é…ç½®settings.py
 2. python manage.py migration
 3. python manage.py runserver 
 
-ÔËĞĞ»·¾³£º
-  ²Ù×÷ÏµÍ³£ºwindows 7
+è¿è¡Œç¯å¢ƒï¼š
+  æ“ä½œç³»ç»Ÿï¼šwindows 7
   Python 2.7
   Django 1.7.2
   Mysql 6.2CE
-  Mysql connectorsÊÇMysql-python-1.2.4.win32-py2.7.exe
+  Mysql connectorsæ˜¯Mysql-python-1.2.4.win32-py2.7.exe
 
-Íõ¼ÑĞÀµÄÔËĞĞ»·¾³:
-  ²Ù×÷ÏµÍ³£ºwindows 7
+ç‹ä½³æ¬£çš„è¿è¡Œç¯å¢ƒ:
+  æ“ä½œç³»ç»Ÿï¼šwindows 7
   Python 2.7.2
   Django 1.7.2
   Mysql  Server version: 5.6.11 MySQL Community Server (GPL)
-  Mysql connectorsÊÇMysql-python-1.2.4.win32-py2.7.exe
+  Mysql connectorsæ˜¯Mysql-python-1.2.4.win32-py2.7.exe
 
-Íõ¼ÑĞÀµÄÔËĞĞ»·¾³2:
-    ²Ù×÷ÏµÍ³£ºubuntu 14.04
+ç‹ä½³æ¬£çš„è¿è¡Œç¯å¢ƒ2:
+    æ“ä½œç³»ç»Ÿï¼šubuntu 14.04
     Python  2.7.6
     Django  1.7.2
     Mysql   mysql  Ver 14.14 Distrib 5.5.40, for debian-linux-gnu (x86_64) using
 readline 6.3
-    Mysql connectors ÊÇMySQL_python-1.2.4-py2.7-linux-x86_64.egg
+    Mysql connectors æ˜¯MySQL_python-1.2.4-py2.7-linux-x86_64.egg
 
 
-ÊÖÊÆÊ¶±ğ£ºleap motion
-python Í¼Ïñ´¦Àí£º pymedia ÎŞ·¨Ê¹ÓÃ£¬ÒÑ¹ıÊ±£»PIL ÓĞÎÊÌâ£¬Æä·ÖÖ§pillow
-¿É´úÌæ£®ubuntuÏÂÎŞ·¨Õı³£ÏÔÊ¾Í¼Æ¬£¬°²×°imagemagic ºó¿ÉÕı³££®
+æ‰‹åŠ¿è¯†åˆ«ï¼šleap motion
+python å›¾åƒå¤„ç†ï¼š pymedia æ— æ³•ä½¿ç”¨ï¼Œå·²è¿‡æ—¶ï¼›PIL æœ‰é—®é¢˜ï¼Œå…¶åˆ†æ”¯pillow
+å¯ä»£æ›¿ï¼ubuntuä¸‹æ— æ³•æ­£å¸¸æ˜¾ç¤ºå›¾ç‰‡ï¼Œå®‰è£…imagemagic åå¯æ­£å¸¸ï¼
 from PIL import Image
 im=Image.open("cyl.jpeg")
 im.load()
 im.show()
-python ÊÓÆµ´¦Àí£º pyglet+avbin
-python ¿ÆÑ§¼ÆËã£º Scipy + Matplotlib
-ÆäËü¿ªÔ´Í¼ÏñÊÓÆµ´¦Àí¿â£º openvis3d + 
+python è§†é¢‘å¤„ç†ï¼š pyglet+avbin
+python ç§‘å­¦è®¡ç®—ï¼š Scipy + Matplotlib
+å…¶å®ƒå¼€æºå›¾åƒè§†é¢‘å¤„ç†åº“ï¼š openvis3d + 
 
-ÓÃÓÚÆÀ¼ÛÄ¿±ê¸ú×ÙËã·¨µÄÊÓÆµ×ÊÔ´:http://wordpress-jodoin.dmi.usherb.ca
-Ä¿±ê¸ú×Ù»áÒé£ºiccv
+ç”¨äºè¯„ä»·ç›®æ ‡è·Ÿè¸ªç®—æ³•çš„è§†é¢‘èµ„æº:http://wordpress-jodoin.dmi.usherb.ca
+ç›®æ ‡è·Ÿè¸ªä¼šè®®ï¼šiccv
 
-Êó±êÊÖÊÆÊ¶±ğÊ¾Àı£º
+é¼ æ ‡æ‰‹åŠ¿è¯†åˆ«ç¤ºä¾‹ï¼š
 branch yzbx:
-    JS/demo/trackpad.html  #¿ÉÒÔÅĞ±ğÊó±êÊÖÊÆ·½Ïò
-    JS/demo/demo.html	#¿ÉÒÔÅĞ±ğÊó±êÊÖÊÆĞÎ×´²¢Ñ§Ï°
+    JS/demo/trackpad.html  #å¯ä»¥åˆ¤åˆ«é¼ æ ‡æ‰‹åŠ¿æ–¹å‘
+    JS/demo/demo.html	#å¯ä»¥åˆ¤åˆ«é¼ æ ‡æ‰‹åŠ¿å½¢çŠ¶å¹¶å­¦ä¹ 
 
-²Î¿¼×ÊÁÏ:
+å‚è€ƒèµ„æ–™:
 https://github.com/n33/jquery.touch
 http://depts.washington.edu/aimgroup/proj/dollar/
 
