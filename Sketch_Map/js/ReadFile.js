@@ -252,6 +252,11 @@ function resets()
         .attr("y",function(d){return projection (d.coordinates)[1]-10})
         .attr("width", 20)
         .attr("height", 20);
+	g.selectAll("path.spot")
+        .data(dataLines)
+		.attr("display","block")
+        .attr("stroke", function(d){return color(Nam(d.name))});
+		
     displayrolers=[true,true,true,true,true,true,true,true,true,true,true,true,true,true];
     if(zoom.scale()<2)
         g.selectAll("path.time").attr("display","block");

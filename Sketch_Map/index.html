@@ -60,15 +60,17 @@
 <script src="js/yzbx.js"></script>
 <script>
     var     menuLeft = document.getElementById( 'cbp-spmenu-s2' ),
-            showLeftPush = document.getElementById( 'OK' ),
+            //showLeftPush = document.getElementById( 'OK' ),
             body = document.body;
-    showLeftPush.onclick = function() {
+    /*
+	showLeftPush.onclick = function() {
         classie.toggle( this, 'active' );
 		
         classie.toggle( body, 'cbp-spmenu-push-toleft' );
         classie.toggle( menuLeft, 'cbp-spmenu-open' );
 		//create_button(3);
     };
+	*/
     var shows=function(){
         setvalue();
         g.selectAll("image.circle").attr("display", function (d) {
@@ -124,21 +126,25 @@
 						else return "block";
 					});
 			});
+			
+			/*
+			var dlgtrigger = document.querySelector( '[data-dialog]' ),
+                somedialog = document.getElementById( dlgtrigger.getAttribute( 'data-dialog' ) ),
+                dlg = new DialogFx( somedialog );
+			dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
+			*/
+			
+			//classie.toggle( this, 'active' );
+			
+			classie.toggle( document.body, 'cbp-spmenu-push-toleft' );
+			classie.toggle( menuLeft, 'cbp-spmenu-open' );
 		}
 		else{
 			//提示出错：请选择两个点进行查询
+			alert("请选择两个点进行查询");
 			//d3.select("div.dialog-inner").select("h2").text("<strong>请选择两个点进行查询</strong>");
 		}
-		
-		 var dlgtrigger = document.querySelector( '[data-dialog]' ),
-                somedialog = document.getElementById( dlgtrigger.getAttribute( 'data-dialog' ) ),
-                dlg = new DialogFx( somedialog );
-        dlgtrigger.addEventListener( 'click', dlg.toggle.bind(dlg) );
-		
-		//classie.toggle( this, 'active' );
-		
-        classie.toggle( document.body, 'cbp-spmenu-push-toleft' );
-        classie.toggle( menuLeft, 'cbp-spmenu-open' );
+	
 	}
     function create_button(arr){
         var str="";
