@@ -69,6 +69,7 @@ d3.json("json//Geo.json", function(error, root) {
         })
         .attr("d", path )
     //绘制情节线
+	//style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:30,30;stroke-dashoffset:0"
     dataLines = root.LINES.geometries;
     g.selectAll("path.spot")
         .data(dataLines)
@@ -78,7 +79,10 @@ d3.json("json//Geo.json", function(error, root) {
         .attr("stroke-width", 1)
         .attr("fill", "none")
         .attr("class","spot")
-        .attr("d", path)
+		.attr("border-style","double")
+		.attr("stroke-dasharray",3,3)
+		.attr("stroke-dashoffset",0)
+        .attr("d", path);
 
     //绘制时间线
     dataLine = root.TimeLine.geometries;
