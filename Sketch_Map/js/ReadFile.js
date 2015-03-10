@@ -49,9 +49,14 @@ var Nam=function(d){
 
     }
 };
+
+var backgroundColorSet=["#0000ff","#00ff00","#ff0000","#ffff00"];
+var backgroundColors=[3,1,0,2,1,2,2,0,2,1,1,0,3,2,3,1,0,2,1,2,2,0,2,1];//色块数大于定义的颜色数导致数组越界显示黑色
 var cnt=0;
 var dataMap,dataRoler,dataLine,datalines,dataEvent;
 //绘制地图
+//g.attr("stoke",rgb(0,0,0))
+//	.attr("fill",rgb(0,0,255));
 d3.json("json//Geo.json", function(error, root) {
     if (error)
         return console.error(error);
@@ -61,14 +66,22 @@ d3.json("json//Geo.json", function(error, root) {
         .data(dataMap)
         .enter()
         .append("path")
-        .attr("stroke","#000")
+        .attr("stroke",function(d,i){
+            return "#000";
+			//return backgroundColorSet[backgroundColors[i]];
+        })
         .attr("stroke-width",1)
         .attr("class","background")
         .attr("fill", function(d,i){
-            return color(i);
+            //return color(i);
+			return backgroundColorSet[backgroundColors[i]];
         })
+		.attr("opacity",1)
+		.attr("fill-opacity",1)
+		.attr("fill-rule","evenodd")
         .attr("d", path )
     //绘制情节线
+	//style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:30,30;stroke-dashoffset:0"
     dataLines = root.LINES.geometries;
     g.selectAll("path.spot")
         .data(dataLines)
@@ -78,7 +91,10 @@ d3.json("json//Geo.json", function(error, root) {
         .attr("stroke-width", 1)
         .attr("fill", "none")
         .attr("class","spot")
-        .attr("d", path)
+		.attr("border-style","double")
+		.attr("stroke-dasharray",3,3)
+		.attr("stroke-dashoffset",0)
+        .attr("d", path);
 
     //绘制时间线
     dataLine = root.TimeLine.geometries;
@@ -115,8 +131,8 @@ d3.json("json//Geo.json", function(error, root) {
         .attr("width", 20)
         .attr("height", 20)
         .on("mouseover", function (d, i, e) {
-            var xPosition=parseFloat(d3.select(this).attr("x"))+xScale.rangeBand()/2;
-            var yPosition=parseFloat(d3.select(this).attr("y"))/2+h/2;
+            var xPosition=parseFloat(d3.event.x);
+            var yPosition=parseFloat(d3.event.y);
 
             d3.select("#tooltip")
                 .style("left",xPosition+"px")
@@ -166,7 +182,9 @@ d3.json("json//Geo.json", function(error, root) {
                 .attr("height", 40)
                 .attr("class", "choose");
             cnt = cnt + 1;
-        });
+			
+			console.log(d.name+d.number);
+		});
 });
 
 //放大缩小
@@ -250,6 +268,13 @@ function resets()
         .attr("y",function(d){return projection (d.coordinates)[1]-10})
         .attr("width", 20)
         .attr("height", 20);
+	g.selectAll("path.spot")
+        .data(dataLines)
+		.attr("display","block")
+        .attr("stroke", function(d){return color(Nam(d.name))});
+		
+	g.selectAll("path.timeMan").remove();
+		
     displayrolers=[true,true,true,true,true,true,true,true,true,true,true,true,true,true];
     if(zoom.scale()<2)
         g.selectAll("path.time").attr("display","block");
@@ -267,6 +292,3 @@ function resets()
         g.selectAll("image.choose").attr("display", "block");
     }
 }
-
-
-
