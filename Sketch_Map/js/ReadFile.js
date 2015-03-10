@@ -50,9 +50,13 @@ var Nam=function(d){
     }
 };
 
+var backgroundColorSet=["#0000ff","#00ff00","#ff0000","#ffff00"];
+var backgroundColors=[3,1,0,2,1,2,2,0,2,1,1,0,3,2];
 var cnt=0;
 var dataMap,dataRoler,dataLine,datalines,dataEvent;
 //绘制地图
+//g.attr("stoke",rgb(0,0,0))
+//	.attr("fill",rgb(0,0,255));
 d3.json("json//Geo.json", function(error, root) {
     if (error)
         return console.error(error);
@@ -62,12 +66,19 @@ d3.json("json//Geo.json", function(error, root) {
         .data(dataMap)
         .enter()
         .append("path")
-        .attr("stroke","#000")
+        .attr("stroke",function(d,i){
+            return "#000";
+			//return backgroundColorSet[backgroundColors[i]];
+        })
         .attr("stroke-width",1)
         .attr("class","background")
         .attr("fill", function(d,i){
             return color(i);
+			//return backgroundColorSet[backgroundColors[i]];
         })
+		.attr("opacity",1)
+		.attr("full-opacity",1)
+		.attr("fill-rule","evenodd")
         .attr("d", path )
     //绘制情节线
 	//style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:30,30;stroke-dashoffset:0"
@@ -261,6 +272,8 @@ function resets()
         .data(dataLines)
 		.attr("display","block")
         .attr("stroke", function(d){return color(Nam(d.name))});
+		
+	g.selectAll("path.timeMan").remove();
 		
     displayrolers=[true,true,true,true,true,true,true,true,true,true,true,true,true,true];
     if(zoom.scale()<2)
