@@ -50,8 +50,12 @@ var Nam=function(d){
     }
 };
 
-var backgroundColorSet=["#0000ff","#00ff00","#ff0000","#ffff00"];
-var backgroundColors=[3,1,0,2,1,2,2,0,2,1,1,0,3,2];
+//var backgroundColorSet=["#0000ff","#00ff00","#ff0000","#ffff00"];//青，绿，
+//var backgroundColors=[3,1,0,2,1,2,2,0,2,1,1,0,3,2,3,1,0,2,1,2,2,0,2,1,1,0,3,2];
+var backgroundColorSet=["#000000","#9FB7D8","#61BAE4","#EBA570","#0093CC","#6272A9","#9FB7D8","#61BAE4","#9592BC","#EBAF92","#9FB7D8","#F8C300","#0093CC","#EBA570","#E9811A"];
+var reflection=[0,   2,0,0,5,0,  0,14,0,0,0,  9,0,0,1,4,  3,6,11,7,8,  12,13,10,0];
+//var backgroundColors=[4,1,4,4,1,  4,4,1,4,4,  4,1,4,4,1,  1,1,1,1,1,  1,1,1,1];
+//event=[1:13]  <==>   index=[+14,+1,+16,+15,+4,  +17,+19,+20,+11,+23,  +18,+21,+22,+7]
 var cnt=0;
 var dataMap,dataRoler,dataLine,datalines,dataEvent;
 //绘制地图
@@ -67,18 +71,23 @@ d3.json("json//Geo.json", function(error, root) {
         .enter()
         .append("path")
         .attr("stroke",function(d,i){
-            return "#000";
+			console.log("*********************"+i);
+            //return "#0000ff";
+			return "white";
 			//return backgroundColorSet[backgroundColors[i]];
+			//stroke-width:0.197238;stroke-dasharray:0.986192 0.591715 0.197238 0.591715
         })
         .attr("stroke-width",1)
         .attr("class","background")
         .attr("fill", function(d,i){
-            return color(i);
-			//return backgroundColorSet[backgroundColors[i]];
+            //return color(i);
+			return backgroundColorSet[reflection[i]];
         })
-		.attr("opacity",1)
-		.attr("full-opacity",1)
-		.attr("fill-rule","evenodd")
+		//.attr("opacity",1)
+		//.attr("full-opacity",1)
+		//.attr("fill-rule","evenodd")
+		.attr("stroke-width",1)
+		.attr("stroke-dasharray",0.986192,0.591715,0.197238,0.591715)
         .attr("d", path )
     //绘制情节线
 	//style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:30,30;stroke-dashoffset:0"
