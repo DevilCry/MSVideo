@@ -71,7 +71,7 @@ d3.json("json//Geo.json", function(error, root) {
         .enter()
         .append("path")
         .attr("stroke",function(d,i){
-			console.log("*********************"+i);
+			//console.log("*********************"+i);
             //return "#0000ff";
 			return "white";
 			//return backgroundColorSet[backgroundColors[i]];
@@ -134,11 +134,23 @@ d3.json("json//Geo.json", function(error, root) {
         .enter()
         .append("svg:image")
         .attr("class", "event")
-        .attr("xlink:href", function(d){return "pic\\EVENT.png"})
-        .attr("x", function(d){return projection (d.coordinates)[0]-10})
-        .attr("y",function(d){return projection (d.coordinates)[1]-10})
-        .attr("width", 20)
-        .attr("height", 20)
+        .attr("xlink:href", function(d,i){
+			if(i==0)	return "SVG\\Event"+14+".svg";
+			console.log("image.event i is "+i);
+			return "SVG\\Event"+i+".svg";
+			//return "pic\\EVENT.png"
+		})
+        .attr("x", function(d,i){
+			if(i==1) return projection (d.coordinates)[0]-10-15+15;
+			return projection (d.coordinates)[0]-10-15
+			})
+        .attr("y",function(d,i){
+			if(i==1) return projection (d.coordinates)[1]-10-53+25;
+			return projection (d.coordinates)[1]-10-53
+		})
+        .attr("width", 50)
+        .attr("height", 100)
+		//.translate([-61.695,-106.195])
         .on("mouseover", function (d, i, e) {
             var xPosition=parseFloat(d3.event.x);
             var yPosition=parseFloat(d3.event.y);
@@ -155,6 +167,7 @@ d3.json("json//Geo.json", function(error, root) {
             str+= d.number+".mp4";
             clicked(str, d.number);
         });
+		/*
     g.selectAll("text.event")
         .data(dataEvent)
         .enter()
@@ -164,6 +177,7 @@ d3.json("json//Geo.json", function(error, root) {
         .attr("y",function(d){return projection (d.coordinates)[1]-10})
         .text(function(d){return "事件"+ d.number})
         .style("font-size","10px");
+		*/
     //绘制角色点
     dataRoler = root.Points.geometries;
     g.selectAll("image.circle")
