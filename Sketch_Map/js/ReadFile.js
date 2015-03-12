@@ -49,6 +49,52 @@ var Nam=function(d){
 
     }
 };
+function getRolersNumPerEvent(dataRoler,dataEvent){
+	var RolersNumPerEvent=[];
+	var a;
+	for(var i=0;i<dataEvent.length;i++)
+	{
+		a=new Array(2);
+		a[0]=0;
+		a[1]=0;
+		RolersNumPerEvent.push(a);
+	}
+	
+	var num;
+	for(var i=0;i<dataRoler.length;i++)
+	{
+		num=dataRoler[i].number-1;
+		RolersNumPerEvent[num][0]=RolersNumPerEvent[num][0]+1;
+	}
+	
+	return RolersNumPerEvent;
+}
+
+function getRolerPos(dataRoler,rolersPerEvent,eventpos)
+{
+	var num,theta,x,y;
+	var set;
+	var RolerPos=[];
+	var radius=20;
+	for(var i=0;i<dataRoler.length;i++)
+	{
+		num=dataRoler[i].number-1;
+		
+		theta=2*Math.PI*rolersPerEvent[num][1]/rolersPerEvent[num][0];
+		//x=eventpos[2*num]+radius*Math.cos(theta)+15;
+		//y=eventpos[2*num]+radius*Math.sin(theta)+45;
+		x=radius*Math.cos(theta);
+		y=radius*Math.sin(theta);
+		//console.log("x y theta is "+x+" "+y+" "+theta);
+		set=new Array(2);
+		set[0]=x;
+		set[1]=y;
+		RolerPos.push(set);
+		rolersPerEvent[num][1]=rolersPerEvent[num][1]+1;
+	}
+	
+	return RolerPos;
+}
 
 //var backgroundColorSet=["#0000ff","#00ff00","#ff0000","#ffff00"];//青，绿，
 //var backgroundColors=[3,1,0,2,1,2,2,0,2,1,1,0,3,2,3,1,0,2,1,2,2,0,2,1,1,0,3,2];
@@ -58,13 +104,15 @@ var reflection=[0,   2,0,0,5,0,  0,14,0,0,0,  9,0,0,1,4,  3,6,11,7,8,  12,13,10,
 //event=[1:13]  <==>   index=[+14,+1,+16,+15,+4,  +17,+19,+20,+11,+23,  +18,+21,+22,+7]
 var cnt=0;
 var dataMap,dataRoler,dataLine,datalines,dataEvent;
+
+var eventpos,rolerPos,rolersPerEvent;
 //绘制地图
 //g.attr("stoke",rgb(0,0,0))
 //	.attr("fill",rgb(0,0,255));
 d3.json("json//Geo.json", function(error, root) {
     if (error)
         return console.error(error);
-    console.log(root.Ma.geometries);
+    //console.log(root.Ma.geometries);
     dataMap = root.Ma.geometries;
     g.selectAll("path.background")
         .data(dataMap)
@@ -128,7 +176,9 @@ d3.json("json//Geo.json", function(error, root) {
         });
 
     //绘制事件点
+	
     dataEvent = root.Event.geometries;
+	eventpos=new Array(2*dataEvent.length);
     g.selectAll("image.event")
         .data(dataEvent)
         .enter()
@@ -136,17 +186,24 @@ d3.json("json//Geo.json", function(error, root) {
         .attr("class", "event")
         .attr("xlink:href", function(d,i){
 			if(i==0)	return "SVG\\Event"+14+".svg";
-			console.log("image.event i is "+i);
+			//console.log("image.event i is "+i);
 			return "SVG\\Event"+i+".svg";
 			//return "pic\\EVENT.png"
 		})
         .attr("x", function(d,i){
-			if(i==1) return projection (d.coordinates)[0]-10-15+15;
-			return projection (d.coordinates)[0]-10-15
+			var num=d.number-1;
+			//console.log("dataEvent.number "+num);
+			if(i==1) {
+				eventpos[2*num]=projection (d.coordinates)[0]-10-15+15;
+			}
+			else eventpos[2*num]=projection (d.coordinates)[0]-10-15;
+			return eventpos[2*num];
 			})
         .attr("y",function(d,i){
-			if(i==1) return projection (d.coordinates)[1]-10-53+25;
-			return projection (d.coordinates)[1]-10-53
+			var num=d.number-1;
+			if(i==1) eventpos[2*num+1]= projection (d.coordinates)[1]-10-53+25;
+			else eventpos[2*num+1]=projection (d.coordinates)[1]-10-53;
+			return eventpos[2*num+1];
 		})
         .attr("width", 50)
         .attr("height", 100)
@@ -178,35 +235,71 @@ d3.json("json//Geo.json", function(error, root) {
         .text(function(d){return "事件"+ d.number})
         .style("font-size","10px");
 		*/
+	
+	
     //绘制角色点
     dataRoler = root.Points.geometries;
+	rolersPerEvent=getRolersNumPerEvent(dataRoler,dataEvent);
+	//console.log("rolersPerEvent is "+rolersPerEvent);
+	//for(var i=0;i<eventpos.length;i=i+2)
+		//console.log("eventpos is "+eventpos[i]+" "+eventpos[i+1]);
+	rolerPos=getRolerPos(dataRoler,rolersPerEvent,eventpos);
+	//for(var i=0;i<rolerPos.length;i=i+1)
+		//console.log("rolersPos is "+rolerPos[i][0]+" "+rolerPos[i][1]);
+	var r=20;
     g.selectAll("image.circle")
         .data(dataRoler)
         .enter()
         .append("svg:image")
         .attr("class", "circle")
-        .attr("xlink:href", function(d){return "pic\\"+d.name+".png"})
-        .attr("x", function(d){return projection (d.coordinates)[0]-10})
-        .attr("y",function(d){return projection (d.coordinates)[1]-10})
-        .attr("width", 20)
-        .attr("height", 20)
+        .attr("xlink:href", function(d){
+			//return "pic\\"+d.name+".png"}
+			//rolersPerEvent[d.number-1][1]=rolersPerEvent[d.number-1][1]+1;
+			//console.log("0 and 1 is "+rolersPerEvent[d.number-1][0]+"  "+rolersPerEvent[d.number-1][1]);
+			return "SVG\\"+d.name+".svg"}
+		)
+        .attr("x", function(d,i){
+			 //console.log("x is "+projection (d.coordinates)[0]-10);
+			 //return projection (d.coordinates)[0]-10
+			 //var theta=2*Math.PI*rolersPerEvent[d.number-1][1]/rolersPerEvent[d.number-1][0];
+			 //var x=eventpos[2*d.number]+r*Math.cos(theta);
+			 //console.log("xxx is "+x+" theta is "+theta+"d.number is "+d.number);
+			 //return rolerPos[i][0];
+			 return eventpos[2*d.number-2]+rolerPos[i][0];
+			})
+        .attr("y",function(d,i){
+			//return projection (d.coordinates)[1]-10
+			//var theta=2*Math.PI*rolersPerEvent[d.number-1][1]/rolersPerEvent[d.number-1][0];
+			//var y=eventpos[2*d.number]+r*Math.sin(theta);
+			//console.log("yyy is "+y+" theta is "+theta);
+			//return rolerPos[i][1];
+			return eventpos[2*d.number-1]+rolerPos[i][1]+25;
+			})
+        .attr("width", 50)
+        .attr("height", 50)
         .attr("display","none")
         .on("click",function(d,i){
             Na[cnt]= d.name;
             Nu[cnt]= d.number;
+			var index=i;
             d3.select(this)
                 .attr("x", function (d) {
-                    return projection(d.coordinates)[0] - 20;
+		
+					return eventpos[2*Nu[cnt]-2]+rolerPos[index][0]-25;
+                    //return projection(d.coordinates)[0] - 20;
                 })
                 .attr("y", function (d) {
-                    return projection(d.coordinates)[1] - 20;
+					//return this-20;
+					return eventpos[2*Nu[cnt]-1]+rolerPos[index][1];
+					//return eventpos[2*Nu[cnt]-1]+rolerPos[index][1]+25;
+                    //return projection(d.coordinates)[1] - 20;
                 })
-                .attr("width", 40)
-                .attr("height", 40)
+                .attr("width", 100)
+                .attr("height", 100)
                 .attr("class", "choose");
             cnt = cnt + 1;
 			
-			console.log(d.name+d.number);
+			//console.log(d.name+d.number);
 		});
 });
 
@@ -285,12 +378,18 @@ function resets()
         .attr("class","circle");
     g.selectAll("image.circle")
         .data(dataRoler)
-        .attr("class", "circle")
+        /*.attr("class", "circle")
         .attr("xlink:href", function(d){return "pic\\"+d.name+".png"})
         .attr("x", function(d){return projection (d.coordinates)[0]-10})
-        .attr("y",function(d){return projection (d.coordinates)[1]-10})
-        .attr("width", 20)
-        .attr("height", 20);
+        .attr("y",function(d){return projection (d.coordinates)[1]-10})*/
+		.attr("x", function(d,i){
+			 return eventpos[2*d.number-2]+rolerPos[i][0];
+			})
+        .attr("y",function(d,i){
+			return eventpos[2*d.number-1]+rolerPos[i][1]+25;
+			})
+        .attr("width", 50)
+        .attr("height", 50);
 	g.selectAll("path.spot")
         .data(dataLines)
 		.attr("display","block")
