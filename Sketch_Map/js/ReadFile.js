@@ -49,6 +49,27 @@ var Nam=function(d){
 
     }
 };
+
+function num2roler(num)
+{
+	switch (num)
+    {
+        case 0: return "Apoc";	//: return 0;
+        case 1: return "Neo";//: return 1;
+        case 2: return "Trinity";//: return 2;
+        case 3: return "Morpheus";//: return 3;
+        case 4: return "Dozer";//: return 4;
+        case 5: return "Cypher";//: return 5;
+        case 6: return "Oracle";//: return 6;
+        case 7: return "Robots";//: return 7;
+        case 8: return "Mouse";//: return 8;
+        case 9: return "Switch";//: return 9;
+        case 10: return "Tank";//: return 10;
+        case 11: return "Smith";//: return 11;
+        case 12: return "Brown";//: return 12;
+        case 13: return "Jones";//: return 13;
+    }
+}
 function getRolersNumPerEvent(dataRoler,dataEvent){
 	var RolersNumPerEvent=[];
 	var a;
@@ -69,12 +90,24 @@ function getRolersNumPerEvent(dataRoler,dataEvent){
 	
 	return RolersNumPerEvent;
 }
-
+var rolernum=14;
 function getRolerPos(dataRoler,rolersPerEvent,eventpos)
 {
 	var num,theta,x,y;
-	var set;
-	var RolerPos=[];
+	var set,matrix;
+	var RolerPos=new Array();
+	for (var i=0;i<rolersPerEvent.length;i++)
+	{
+		var matrix=new Array();
+		for(var j=0;j<rolernum;j++)
+		{
+			set=new Array(2);
+			set[0]=0;
+			set[1]=0;
+			matrix.push(set);
+		}
+		RolerPos.push(matrix);
+	}
 	var radius=20;
 	for(var i=0;i<dataRoler.length;i++)
 	{
@@ -82,17 +115,22 @@ function getRolerPos(dataRoler,rolersPerEvent,eventpos)
 		
 		theta=2*Math.PI*rolersPerEvent[num][1]/rolersPerEvent[num][0];
 		//x=eventpos[2*num]+radius*Math.cos(theta)+15;
-		//y=eventpos[2*num]+radius*Math.sin(theta)+45;
-		x=radius*Math.cos(theta);
-		y=radius*Math.sin(theta);
+		//y=eventpos[2*num+1]+radius*Math.sin(theta)+45;
+		x=eventpos[2*num]+radius*Math.cos(theta);
+		y=eventpos[2*num+1]+radius*Math.sin(theta)+25;
 		//console.log("x y theta is "+x+" "+y+" "+theta);
-		set=new Array(2);
-		set[0]=x;
-		set[1]=y;
-		RolerPos.push(set);
+		RolerPos[num][Nam(dataRoler[i].name)][0]=x;
+		RolerPos[num][Nam(dataRoler[i].name)][1]=y;
 		rolersPerEvent[num][1]=rolersPerEvent[num][1]+1;
 	}
-	
+	console.log("RolerPos is ......");
+	for(var i=0;i<RolerPos.length;i++)
+	{
+		for(var j=0;j<rolernum;j++)
+		{
+			console.log(i+" "+j+" "+RolerPos[i][j]);
+		}
+	}
 	return RolerPos;
 }
 
@@ -105,6 +143,11 @@ var reflection=[0,   2,0,0,5,0,  0,14,0,0,0,  9,0,0,1,4,  3,6,11,7,8,  12,13,10,
 var cnt=0;
 var dataMap,dataRoler,dataLine,datalines,dataEvent;
 
+/*
+eventpos event所在坐标 event=array[eventnum*2];
+rolerPos roler所在坐标 rolerpos=array[eventnum][rolernum][2];
+rolersPerEvent=array[eventnum][2]
+*/
 var eventpos,rolerPos,rolersPerEvent;
 //绘制地图
 //g.attr("stoke",rgb(0,0,0))
@@ -240,40 +283,24 @@ d3.json("json//Geo.json", function(error, root) {
     //绘制角色点
     dataRoler = root.Points.geometries;
 	rolersPerEvent=getRolersNumPerEvent(dataRoler,dataEvent);
-	//console.log("rolersPerEvent is "+rolersPerEvent);
-	//for(var i=0;i<eventpos.length;i=i+2)
-		//console.log("eventpos is "+eventpos[i]+" "+eventpos[i+1]);
 	rolerPos=getRolerPos(dataRoler,rolersPerEvent,eventpos);
-	//for(var i=0;i<rolerPos.length;i=i+1)
-		//console.log("rolersPos is "+rolerPos[i][0]+" "+rolerPos[i][1]);
-	var r=20;
+
     g.selectAll("image.circle")
         .data(dataRoler)
         .enter()
         .append("svg:image")
         .attr("class", "circle")
         .attr("xlink:href", function(d){
-			//return "pic\\"+d.name+".png"}
-			//rolersPerEvent[d.number-1][1]=rolersPerEvent[d.number-1][1]+1;
-			//console.log("0 and 1 is "+rolersPerEvent[d.number-1][0]+"  "+rolersPerEvent[d.number-1][1]);
 			return "SVG\\"+d.name+".svg"}
 		)
-        .attr("x", function(d,i){
-			 //console.log("x is "+projection (d.coordinates)[0]-10);
-			 //return projection (d.coordinates)[0]-10
-			 //var theta=2*Math.PI*rolersPerEvent[d.number-1][1]/rolersPerEvent[d.number-1][0];
-			 //var x=eventpos[2*d.number]+r*Math.cos(theta);
-			 //console.log("xxx is "+x+" theta is "+theta+"d.number is "+d.number);
-			 //return rolerPos[i][0];
-			 return eventpos[2*d.number-2]+rolerPos[i][0];
+        .attr("x", function(d){
+		     console.log("x is ...");
+			 console.log(d.number+d.name);
+			 return rolerPos[d.number-1][Nam(d.name)][0];
 			})
-        .attr("y",function(d,i){
-			//return projection (d.coordinates)[1]-10
-			//var theta=2*Math.PI*rolersPerEvent[d.number-1][1]/rolersPerEvent[d.number-1][0];
-			//var y=eventpos[2*d.number]+r*Math.sin(theta);
-			//console.log("yyy is "+y+" theta is "+theta);
-			//return rolerPos[i][1];
-			return eventpos[2*d.number-1]+rolerPos[i][1]+25;
+        .attr("y",function(d){
+			return rolerPos[d.number-1][Nam(d.name)][1];
+			//return eventpos[2*d.number-1]+rolerPos[i][1]+25;
 			})
         .attr("width", 50)
         .attr("height", 50)
@@ -285,14 +312,12 @@ d3.json("json//Geo.json", function(error, root) {
             d3.select(this)
                 .attr("x", function (d) {
 		
-					return eventpos[2*Nu[cnt]-2]+rolerPos[index][0]-25;
+					return rolerPos[d.number][Nam(d.name)][0]-25;
                     //return projection(d.coordinates)[0] - 20;
                 })
                 .attr("y", function (d) {
 					//return this-20;
-					return eventpos[2*Nu[cnt]-1]+rolerPos[index][1];
-					//return eventpos[2*Nu[cnt]-1]+rolerPos[index][1]+25;
-                    //return projection(d.coordinates)[1] - 20;
+					return rolerPos[d.number][Nam(d.name)][0]-25;
                 })
                 .attr("width", 100)
                 .attr("height", 100)
