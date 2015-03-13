@@ -88,12 +88,13 @@
 
     })();
 	*/
+	
 	var find=function(){
 		console.log("show the path .................................");
 		//显示路径数目并创建相应的按钮
 		if(cnt==2&&Nu[0]<Nu[1]){
 			var pointNum=dataEvent.length;
-			var timeManPathArray=getTimeLinePath(Nu,Na,dataLines,pointNum,dataRoler)
+			var timeManPathArray=getTimeLinePath(Nu,Na,dataLines,pointNum,dataRoler);
 			
 			create_button(timeManPathArray.length);
 			//d3.select("div.dialog-inner").select("h2").text("共有"+timeManPathArray.length+"条路径");
@@ -116,11 +117,12 @@
 				//console.log("time value is "+timevalue);
 				//dataRoler 事件角色点的集合
 				//timeManValueArray={from,to,rolerNum}
-				var timeManLineArray=getTimeManValueArray(dataRoler,d,Na);
+				var timeManLineArray=getTimeManValueArray(rolerPos,d,Na);
 				//console.log("timeManValueArray is "+timeManValueArray);
 				console.log("Na is "+Na);
 				g.selectAll("path.timeMan").remove();
 				
+				//createAbsLine(g,timeManLineArray);
 				g.selectAll("path.timeMan")
 					.data(timeManLineArray[0])
 					.enter()
@@ -129,6 +131,11 @@
 					.attr("stroke-width", 1)
 					.attr("fill", "none")
 					.attr("d", path);
+					/*.attr("d",function(d){
+						var att="M"+d.coordinates[0][0]+" "+d.coordinates[0][0]
+									+"L"+d.coordinates[1][0]+" "+d.coordinates[1][1]+" Z";
+						return att;
+					})*/
 					
 				g.selectAll("path.timeMan")
 					.data(timeManLineArray[1])
@@ -146,7 +153,10 @@
 						}
 					})
 					.attr("display","block");
+					
+				createAPath(g,[[433,347],[347,433],[522,335],[600,400],[400,600]]);
 			});
+			
 			
 			/*
 			var dlgtrigger = document.querySelector( '[data-dialog]' ),
@@ -162,7 +172,7 @@
 		}
 		else{
 			//提示出错：请选择两个点进行查询
-			alert("请选择两个点进行查询");
+			alert("请选择两个点进行查询并按按照时间顺序选取");
 			//d3.select("div.dialog-inner").select("h2").text("<strong>请选择两个点进行查询</strong>");
 		}
 	

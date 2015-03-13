@@ -289,16 +289,7 @@ eventManPointArray: 对应Geo.json 中的Points 属性，对应ReadFill.js中的
 */
 function getCoordinates(eventNum,rolerName,eventManPointArray)
 {
-	for(var i=0;i<eventManPointArray.length;i++)
-	{
-		if(eventManPointArray[i].number==eventNum&&eventManPointArray[i].name==rolerName)
-		{
-			return eventManPointArray[i].coordinates;
-		}
-	}
-	
-	console.log("error: unexpected number and name in Points!");
-	return [0,0];
+	return eventManPointArray[eventNum-1][Nam(rolerName)];
 }
 
 /*
@@ -313,7 +304,15 @@ return 2 表示显示并令颜色为desname 对应的color(Nam(desname))
 return 3 表示显示并令其颜色为混合颜色
 
 */
-
+function getInvertLocation(from,to)
+{
+	var location=[];
+	var xoff=25,yoff=25;
+	location.push(projection.invert([from[0]+xoff,from[1]+yoff]));
+	location.push(projection.invert([to[0]+xoff,to[1]+yoff]));
+	
+	return location;
+}
 function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
 {
 	//   {"s":1,"e":3,"len":3,"type":"LineString","coordinates":[[86.64466985700005,22.546933554000077],[96.06690781900005,20.561954826000033]]},
@@ -328,8 +327,8 @@ function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
 		line.type="LineString";
 		from=getCoordinates(timeManPath[0][0],nameArray[0],eventManPointArray);
 		to=getCoordinates(timeManPath[0][0],nameArray[1],eventManPointArray);
-		line.coordinates=[from,to];
-		
+		line.coordinates=getInvertLocation(from,to);
+		//console("line->invert "+line+" -> "+line)
 		timeManValueArray.push(line);
 		colorArray.push(3);
 	}
@@ -350,7 +349,7 @@ function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
 		line.type="LineString";
 		from=getCoordinates(timeManPath[j][0],nameArray[timeManPath[j][2]-1],eventManPointArray);
 		to=getCoordinates(timeManPath[j][1],nameArray[timeManPath[j][2]-1],eventManPointArray);
-		line.coordinates=[from,to];
+		line.coordinates=getInvertLocation(from,to);
 		timeManValueArray.push(line);
 		colorArray.push(timeManPath[j][2]);
 		
@@ -360,7 +359,7 @@ function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
 			line.type="LineString";
 			from=getCoordinates(timeManPath[j][1],nameArray[2-timeManPath[j][2]],eventManPointArray);
 			to=getCoordinates(timeManPath[j][1],nameArray[timeManPath[j][2]-1],eventManPointArray);
-			line.coordinates=[from,to];
+			line.coordinates=getInvertLocation(from,to);
 			timeManValueArray.push(line);
 			colorArray.push(3);
 		}
@@ -370,7 +369,7 @@ function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
 	line.type="LineString";
 	from=getCoordinates(timeManPath[j][0],nameArray[timeManPath[j][2]-1],eventManPointArray);
 	to=getCoordinates(timeManPath[j][1],nameArray[timeManPath[j][2]-1],eventManPointArray);
-	line.coordinates=[from,to];
+	line.coordinates=getInvertLocation(from,to);
 	timeManValueArray.push(line);
 	colorArray.push(timeManPath[j][2]);
 		
@@ -380,7 +379,7 @@ function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
 		line.type="LineString";
 		from=getCoordinates(timeManPath[j][1],nameArray[0],eventManPointArray);
 		to=getCoordinates(timeManPath[j][1],nameArray[1],eventManPointArray);
-		line.coordinates=[from,to];
+		line.coordinates=getInvertLocation(from,to);
 		timeManValueArray.push(line);
 		colorArray.push(3);
 	}
@@ -396,6 +395,65 @@ function getTimeManValueArray(eventManPointArray,timeManPath,nameArray)
 	timeManLineArray.push(colorArray);
 	return timeManLineArray;
 }
+
+var lineFunction=d3.svg.line()
+					.x(function(d){return d.coordinates[0]})
+					.y(function(d){return d.coordinates[1]})
+					.interpolate("linear");
+
+function createAbsLine(g,timeManLineArray)
+{
+	var col;
+	for(var i=0;i<timeManLineArray[0].length;i++)
+	{
+		if(timeManLineArray[1][i]==1){
+			col=color(Nam(Na[0]));
+		}
+		else if(timeManLineArray[1][i]==2)
+		{
+			col=color(Nam(Na[1]));
+		}
+		else{	//d.rolerNum==3
+			col=color(19);	//最后一种颜色
+			//return "red";
+		}
+		g.append("line")
+			.attr("class","timeMan")
+			.attr("x1",timeManLineArray[0][i].coordinates[0][0])
+			.attr("y1",timeManLineArray[0][i].coordinates[0][1])
+			.attr("x2",timeManLineArray[0][i].coordinates[1][0])
+			.attr("y2",timeManLineArray[0][i].coordinates[1][1])
+			.attr("stroke",col)
+			.attr("stroke-width", 1)
+			.attr("fill", "none")
+			.attr("display","block");
+	}
+}		
+
+function createAPath(g,points)
+{	
+	var att;
+	for(var i=0;i<points.length;i++)
+	{	
+		if(i==0)	att="M"+points[i][0]+" "+points[i][1];
+		else att=att+" L"+points[i][0]+" "+points[i][1];
+	}
+	att=att+" Z";
+	console.log(att);
+	
+	g.selectAll("path.test").remove();
+	g.selectAll("path.test")
+		.append("path")
+		.attr("class","test")
+		.attr("stroke-width",10)
+		.attr("fill", "none")
+		.attr("stroke","red")
+		//.attr("d", path);
+		.attr("d",att)
+		.attr("display","block");
+		
+		
+	}
 
 /*
 //显示路径
@@ -433,3 +491,37 @@ if(cnt==2&&Nu[0]<Nu[1])
 }
         
 */
+
+function getEventLocation(eventpos)
+{
+	var eventlocation=[];
+	var set;
+	for(var i=0;i<eventpos.length;i=i+2)
+	{
+		set=new Array(2);
+		set=projection.invert([eventpos[i],eventpos[i+1]]);
+		eventlocation.push(set);
+	}
+	
+	return eventlocation;
+}
+
+function getRolerLocation(rolerpos)
+{
+	var rolerlocation=[];
+	var seti,setj;
+	for(var i=0;i<rolerpos.length;i++)
+	{
+		seti=new Array();
+		for(var j=0;j<rolerpos[i].length;j++)
+		{
+			setj=new Array(2);
+			setj=projection.invert(rolerpos[i][j]);
+			seti.push(setj);
+		}
+		
+		rolerlocation.push(seti);
+	}
+	
+	return rolerlocation;
+}

@@ -7,6 +7,8 @@ var svg = d3.select("body").append("svg")
     .attr("height", height)
     .append("g")
     .attr("transform", "translate(0,0)");
+//from spherical coordinates (in degrees) to Cartesian coordinates (in pixels):	projection()
+//from Cartesian coordinates (in pixels) to spherical coordinates (in degrees)	projection.invert()
 var projection = d3.geo.mercator()
     .center([117, 26])
     .scale(800)
@@ -123,14 +125,16 @@ function getRolerPos(dataRoler,rolersPerEvent,eventpos)
 		RolerPos[num][Nam(dataRoler[i].name)][1]=y;
 		rolersPerEvent[num][1]=rolersPerEvent[num][1]+1;
 	}
+	
 	console.log("RolerPos is ......");
 	for(var i=0;i<RolerPos.length;i++)
 	{
 		for(var j=0;j<rolernum;j++)
 		{
-			console.log(i+" "+j+" "+RolerPos[i][j]);
+			console.log(i+" "+j+" "+num2roler(j)+" "+RolerPos[i][j]);
 		}
 	}
+	
 	return RolerPos;
 }
 
@@ -144,11 +148,13 @@ var cnt=0;
 var dataMap,dataRoler,dataLine,datalines,dataEvent;
 
 /*
-eventpos event所在坐标 event=array[eventnum*2];
-rolerPos roler所在坐标 rolerpos=array[eventnum][rolernum][2];
+eventpos event所在迪卡尔坐标 event=array[eventnum*2];
+rolerPos roler所在迪卡尔坐标 rolerpos=array[eventnum][rolernum][2];
 rolersPerEvent=array[eventnum][2]
+eventlocation event所在经纬度 eventlocation=array[eventnum][2];
+rolerlocation roler所在经纬度 rolerlocation=array[eventnum][rolernum][2];
 */
-var eventpos,rolerPos,rolersPerEvent;
+var eventpos,rolerPos,rolersPerEvent,eventlocation,rolerlocation;
 //绘制地图
 //g.attr("stoke",rgb(0,0,0))
 //	.attr("fill",rgb(0,0,255));
@@ -168,16 +174,16 @@ d3.json("json//Geo.json", function(error, root) {
 			//return backgroundColorSet[backgroundColors[i]];
 			//stroke-width:0.197238;stroke-dasharray:0.986192 0.591715 0.197238 0.591715
         })
-        .attr("stroke-width",1)
+        .attr("stroke-width",3)
         .attr("class","background")
         .attr("fill", function(d,i){
             //return color(i);
 			return backgroundColorSet[reflection[i]];
         })
-		//.attr("opacity",1)
-		//.attr("full-opacity",1)
+		.attr("opacity",0.5)
+		.attr("full-opacity",0.5)
 		//.attr("fill-rule","evenodd")
-		.attr("stroke-width",1)
+		//.attr("stroke-width",1)
 		.attr("stroke-dasharray",0.986192,0.591715,0.197238,0.591715)
         .attr("d", path )
     //绘制情节线
@@ -294,8 +300,8 @@ d3.json("json//Geo.json", function(error, root) {
 			return "SVG\\"+d.name+".svg"}
 		)
         .attr("x", function(d){
-		     console.log("x is ...");
-			 console.log(d.number+d.name);
+		     //console.log("x is ...");
+			 //console.log(d.number+d.name);
 			 return rolerPos[d.number-1][Nam(d.name)][0];
 			})
         .attr("y",function(d){
@@ -312,15 +318,16 @@ d3.json("json//Geo.json", function(error, root) {
             d3.select(this)
                 .attr("x", function (d) {
 		
-					return rolerPos[d.number][Nam(d.name)][0]-25;
+					return rolerPos[d.number-1][Nam(d.name)][0]-15;
                     //return projection(d.coordinates)[0] - 20;
                 })
                 .attr("y", function (d) {
 					//return this-20;
-					return rolerPos[d.number][Nam(d.name)][0]-25;
+					return rolerPos[d.number-1][Nam(d.name)][1]-15;
                 })
-                .attr("width", 100)
-                .attr("height", 100)
+                .attr("width", 80)
+                .attr("height", 80)
+				//.attr("stroke","red")
                 .attr("class", "choose");
             cnt = cnt + 1;
 			
@@ -408,10 +415,10 @@ function resets()
         .attr("x", function(d){return projection (d.coordinates)[0]-10})
         .attr("y",function(d){return projection (d.coordinates)[1]-10})*/
 		.attr("x", function(d,i){
-			 return eventpos[2*d.number-2]+rolerPos[i][0];
+			 return rolerPos[d.number-1][Nam(d.name)][0];
 			})
         .attr("y",function(d,i){
-			return eventpos[2*d.number-1]+rolerPos[i][1]+25;
+			return rolerPos[d.number-1][Nam(d.name)][1];
 			})
         .attr("width", 50)
         .attr("height", 50);
@@ -433,9 +440,14 @@ function resets()
         g.selectAll("image.choose").attr("display", "none");
     }
     else {
-        g.selectAll("image.circle").attr("display", function (d) {
-            var result=checkdis(d);
-            return result;});
+		var scale=zoom.scale();
+        g.selectAll("image.circle")
+			.attr("width",50/(scale*scale))
+			.attr("height",50/(scale*scale))
+			.attr("display", function (d) {
+				var result=checkdis(d);
+				return result;
+			});
         g.selectAll("image.choose").attr("display", "block");
     }
 }
