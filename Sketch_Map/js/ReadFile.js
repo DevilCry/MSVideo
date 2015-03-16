@@ -125,7 +125,7 @@ function getRolerPos(dataRoler,rolersPerEvent,eventpos)
 		RolerPos[num][Nam(dataRoler[i].name)][1]=y;
 		rolersPerEvent[num][1]=rolersPerEvent[num][1]+1;
 	}
-	
+	/*
 	console.log("RolerPos is ......");
 	for(var i=0;i<RolerPos.length;i++)
 	{
@@ -134,9 +134,137 @@ function getRolerPos(dataRoler,rolersPerEvent,eventpos)
 			console.log(i+" "+j+" "+num2roler(j)+" "+RolerPos[i][j]);
 		}
 	}
-	
+	*/
 	return RolerPos;
 }
+
+function getEventAdjMatrix(eventline,eventnum)
+{
+	var adjmat=[];
+	var set=[];
+	for(var i=0;i<eventnum;i++)
+	{
+		set=new Array();
+		for(var j=0;j<eventnum;j++)
+		{
+			set.push(0);
+		}
+		adjmat.push(set);
+	}
+	
+	var s,e;
+	for(var i=0;i<eventline.length;i++)
+	{
+		s=eventline[i].s;
+		e=eventline[i].e;
+		adjmat[s][e]=1;
+	}
+	
+	console.log("adjmat .......");
+	for(var i=0;i<eventnum;i++)
+	{
+		console.log(i+" "+adjmat[i]);
+	}
+	
+	return adjmat;
+}
+
+
+function reverseEventPath(pathrecord,x,s)
+{
+	if(x!=s){
+		var set=new Array(2);
+		set[0]=pathrecord[x];
+		set[1]=x;
+		var djstleventpath=reverseEventPath(pathrecord,pathrecord[x],s);
+		djstleventpath.push(set);
+		return djstleventpath;
+	}
+	else{
+		return [];
+	}
+}
+function djstlEventPath(evetnchoose,eventline,eventId2Num)
+{
+	var s=eventId2Num[eventchoose[0]];
+	var e=eventId2Num[eventchoose[1]];
+	
+	var adjmat=getEventAdjMatrix(eventline,15);
+	
+	var distance=new Array(15)
+	var flag=new Array(15);
+	var record=new Array(15);
+	var minNum=s;
+	for(var i=0;i<15;i++)
+	{
+		distance[i]=-1;
+		flag[i]=0;
+	}
+	distance[s]=0;
+	flag[s]=1;
+	
+	var min;
+	while(minNum!=e)
+	{
+		console.log("minNum flag distance ");
+		console.log(minNum);
+		console.log(flag);
+		console.log(distance);
+		for(var i=minNum+1;i<15;i++)
+		{
+			//console.log("adjmat.lenght "+adjmat.lenght);
+			if(adjmat[minNum][i]!=0&&distance[minNum]!=-1&&flag[i]==0)
+			{
+				if(distance[i]==-1||distance[minNum]+adjmat[minNum][i]<distance[i])
+				{
+					distance[i]=distance[minNum]+adjmat[minNum][i];
+					record[i]=minNum;
+				}
+			}
+		}
+		flag[minNum]=1;
+		
+		min=-1;
+		for(var i=1;i<15;i++)
+		{
+			if(flag[i]==0&&distance[i]!=-1&&(distance[i]<min||min==-1))
+			{
+				min=distance[i];
+				minNum=i;
+			}
+		}
+		
+		if(min==-1) return [];
+	}
+	
+	djstleventpath=reverseEventPath(record,e,s);
+	//
+	return djstleventpath;
+}
+
+function showEventPath(eventchoose,eventline,eventId2Num){
+	var djstleventpath=djstlEventPath(eventchoose,eventline,eventId2Num);
+	var showFlag=new Array(eventline.length);
+	var s=eventId2Num[eventchoose[0]];
+	var e=eventId2Num[eventchoose[1]];
+	for(var i=0;i<eventline.length;i++)
+	{
+		showFlag[i]=0;
+		for(var j=0;j<djstleventpath.length;j++)
+		{
+			if(eventline[i].s==djstleventpath[j][0]&&eventline[i].e==djstleventpath[j][1]) showFlag[i]=1;
+		}
+	}
+	g.selectAll("path.time")
+        .data(showFlag)
+        .attr("display",function(d){
+			if(d==1)	return "block";
+			else return "none"
+		})
+}
+
+
+
 
 //var backgroundColorSet=["#0000ff","#00ff00","#ff0000","#ffff00"];//青，绿，
 //var backgroundColors=[3,1,0,2,1,2,2,0,2,1,1,0,3,2,3,1,0,2,1,2,2,0,2,1,1,0,3,2];
@@ -156,8 +284,38 @@ rolerlocation roler所在经纬度 rolerlocation=array[eventnum][rolernum][2];
 */
 var eventpos,rolerPos,rolersPerEvent,eventlocation,rolerlocation;
 //绘制地图
-//g.attr("stoke",rgb(0,0,0))
-//	.attr("fill",rgb(0,0,255));
+//eventchoose=[event1,event2];
+var eventchoose=new Array(2);
+var eventchoosenum=0;
+
+//对应相应块的id
+var eventNum2Id=[+14,+1,+16,+15,+4,  +17,+19,+20,+11,+23,  +18,+21,+22,+7];
+var eventId2Num=[0,   2,0,0,5,0,  0,14,0,0,0,  9,0,0,1,4,  3,6,11,7,8,  12,13,10,0];
+
+function mousePos(e){ 
+        var x,y; 
+        var e = e||window.event; 
+        return [e.clientX+document.body.scrollLeft+document.documentElement.scrollLeft,e.clientY+document.body.scrollTop+document.documentElement.scrollTop]; 
+ }
+function showSceneTooltip(SceneNumber,pos)
+{
+	console.log("showSceneTooltip ..."+SceneNumber);
+	//console.log(d3.mouse(d3.select("body").select("svg")));
+	//x=document.documentElement.scrollLeft;//+event.clientX;
+	//y=document.documentElement.scrollTop;//+event.clientY;
+	//console.log("x is "+x+" y is "+y);
+	var x=pos[0]+10;
+	var y=pos[0]+10;
+	var tooltip=d3.select("#scene-tooltip");
+	tooltip.select("#scene-number").text(SceneNumber[0]+","+SceneNumber[1]);
+	tooltip.select("#scene-people").text("neo+smi");
+	tooltip.attr("class","show")
+			.style("left",x+"px")
+			.style("top",y+"px");
+	tooltip.on("mouseout",function(d){
+		d3.select(this).attr("class","hidden");
+	});
+}
 d3.json("json//Geo.json", function(error, root) {
     if (error)
         return console.error(error);
@@ -168,14 +326,13 @@ d3.json("json//Geo.json", function(error, root) {
         .enter()
         .append("path")
         .attr("stroke",function(d,i){
-			//console.log("*********************"+i);
-            //return "#0000ff";
 			return "white";
-			//return backgroundColorSet[backgroundColors[i]];
-			//stroke-width:0.197238;stroke-dasharray:0.986192 0.591715 0.197238 0.591715
         })
         .attr("stroke-width",3)
         .attr("class","background")
+		.attr("id",function(d,i){
+			return "path-background"+i;
+		})
         .attr("fill", function(d,i){
             //return color(i);
 			return backgroundColorSet[reflection[i]];
@@ -186,6 +343,53 @@ d3.json("json//Geo.json", function(error, root) {
 		//.attr("stroke-width",1)
 		.attr("stroke-dasharray",0.986192,0.591715,0.197238,0.591715)
         .attr("d", path )
+		.on("click",function(d,i){
+			
+			if(eventchoosenum==0){
+				eventchoose[0]=i;
+				eventchoosenum=1;
+				g.selectAll("#path-background"+i)
+				.attr("stroke","red")
+				.attr("stroke-width",10);
+			}
+			else if(eventchoosenum==1) {
+				if(eventchoose[0]==i)
+				{
+					eventchoosenum=0;
+					g.selectAll("#path-background"+eventchoose[0])
+						.attr("stroke","white")
+						.attr("stroke-width",1);
+				}
+				else{
+					eventchoose[1]=i;
+					eventchoosenum=2;
+					console.log("eventchoose is "+eventchoose+" number is "+eventId2Num[eventchoose[0]]+" "+eventId2Num[eventchoose[1]]);
+					g.selectAll("#path-background"+i)
+					.attr("stroke","red")
+					.attr("stroke-width",10);
+					
+					//pos=mousePos(e);
+					pos=[400,400];
+					showSceneTooltip(eventchoose,pos);
+				}
+			}
+			else if(eventchoosenum==2){		
+				g.selectAll("#path-background"+eventchoose[0])
+						.attr("stroke","white")
+						.attr("stroke-width",1);
+				g.selectAll("#path-background"+eventchoose[1])
+					.attr("stroke","white")
+					.attr("stroke-width",1);
+					
+				//showEventPath(eventchoose,dataLine,eventId2Num)
+					//showEventPath(eventchoose);
+				eventchoosenum=0;
+			}
+			
+			if(eventchoosenum!=2){
+				d3.select("#scene-tooltip").attr("class","hidden");
+			}
+		});
     //绘制情节线
 	//style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:30,30;stroke-dashoffset:0"
     dataLines = root.LINES.geometries;
@@ -336,6 +540,12 @@ d3.json("json//Geo.json", function(error, root) {
 });
 
 //放大缩小
+var maxSize=200;
+function zoomSize(size,scale)
+{
+	if(size*scale>=maxSize)	return maxSize/scale;
+	else return size;
+}
 function zoomed() {
     g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     if(zoom.scale()<2)
@@ -348,10 +558,20 @@ function zoomed() {
         g.selectAll("image.choose").attr("display", "none");
     }
     else {
-        g.selectAll("image.circle").attr("display", function (d) {
-            var result=checkdis(d);
-            return result;});
-        g.selectAll("image.choose").attr("display", "block");
+		//var size=zoomSize(50,zoom.scale());
+        g.selectAll("image.circle")
+			.attr("display", function (d) {
+				var result=checkdis(d);
+				return result;
+				})
+			//.attr("width",50)
+			//.attr("height",50)
+			;
+			
+        g.selectAll("image.choose")
+			.attr("display", "block");
+			//.attr("width",zoomSize(80,zoom.scale()/1.6))
+			//.attr("height",zoomSize(80,zoom.scale()/1.6));
     }
 }
 //查询路径函数
@@ -437,18 +657,18 @@ function resets()
     if(zoom.scale()<2)
     {
         g.selectAll("image.circle").attr("display","none");
-        g.selectAll("image.choose").attr("display", "none");
+        //g.selectAll("image.choose").attr("display", "none");
     }
     else {
 		var scale=zoom.scale();
         g.selectAll("image.circle")
-			.attr("width",50/(scale*scale))
-			.attr("height",50/(scale*scale))
+			.attr("width",50)
+			.attr("height",50)
 			.attr("display", function (d) {
 				var result=checkdis(d);
 				return result;
 			});
-        g.selectAll("image.choose").attr("display", "block");
+        //g.selectAll("image.choose").attr("display", "block");
     }
 }
 
