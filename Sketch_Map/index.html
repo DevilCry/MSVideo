@@ -16,11 +16,28 @@
 <body>
 <!--查询界面-->
 <nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-right" id="cbp-spmenu-s2"></nav>
-<div id="scene-tooltip" class="hidden">
-<p><strong>Scene Detail</strong></p>
-<p>Event: <span id="scene-number">1</span></p>
-<p>Common Rolers: <span id="scene-people">neo</span></p>
-</div>
+
+<table id="scene-tooltip" class="hidden" style="text-align: left; width: 50%;"
+border="1" cellpadding="2" cellspacing="2">
+<tbody>
+<tr>
+<td style="width: 50%;">Scene: <span id="scene-number1">1</span><br>
+Type: <span id="scene-type1">indoor</span> <br>
+Rolers:<span id="scene-people1"> neo</span> <br>
+Related Event: <span id="scene-related-event1">1,3,4</span><br>
+</td>
+<td style="width: 50%;">Scene: <span id="scene-number2">2</span><br>
+Type: <span id="scene-type2">indoor</span> <br>
+Rolers:<span id="scene-people2"> neo,smith,he</span><br>
+Related Event:<span id="scene-related-event2">5,7,11</span><br>
+</td>
+</tr>
+<tr>
+<td style="text-align: center;" colspan="2">Associated Event: <span id="scene-associated-event">1</span><br>
+Common Rolers: <span id="scene-people">neo</span> </td>
+</tr>
+</tbody>
+</table>
 
 <div class="container">
     <div class="main">

@@ -1,24 +1,21 @@
 #scene-tooltip{
+	word-break:break-all;
+	word-wrap:break-all;
 	position: absolute;
-	width: 500px;
-	height: auto;
-	padding: 5px;
-	background-color: white;
+	background-color: green;
 	opacity: 0.8;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-box-shadow: 4px 4px 5px rgba(0,0,0,0.4);
-	-moz-boxbox-shadow: 4px 4px 5px rgba(0,0,0,0.4);
-	box-shadow: 4px 4px 5px rgba(0,0,0,0.4);
-	pointer-events: none;
 }
 #scene-tooltip.hidden{
 	display: none;
 }
 #scene-tooltip p{
-	margin: 0;
-	font-family: sans-serif;
-	font-size: 24px;
-	line-height: 32px;
+	//word-wrap: break-word;
+	//font-family: sans-serif;
+	//font-size: 24px;
+	//line-height: 32px;
 }
+#scene-tooltip td{
+	//word-wrap: break-word;
+	width: 50%;
+}
+

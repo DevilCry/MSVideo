@@ -310,20 +310,31 @@ function getCommonRolers(SceneNumber,SceneData,RolerNum,roler2num,num2roler)
 		rolers1[i]=0;
 		rolers2[i]=0;
 	}
+	
+	var rolersName1="";
+	var rolersName2="";
 	for(var i=0;i<SceneData.length;i++)
 	{
 		console.log("SceneData "+i+" "+SceneData[i].number+" "+SceneData[i].name);
 		if(SceneData[i].number==num1){
 			rolers1[roler2num(SceneData[i].name)]=1;
+			if(rolersName1=="")	rolersName1=SceneData[i].name;
+			else rolersName1=rolersName1+","+SceneData[i].name;
 		}
 		else if(SceneData[i].number==num2)
 		{
 			rolers2[roler2num(SceneData[i].name)]=1;
+			if(rolersName2=="")	rolersName2=SceneData[i].name;
+			else rolersName2=rolersName2+","+SceneData[i].name;
 		}
 	}
 	
 	console.log("rolers 1 "+rolers1);
+	d3.select("#scene-number1").text(num1);
+	d3.select("#scene-people1").text(rolersName1);
 	console.log("rolers 2 "+rolers2);
+	d3.select("#scene-number2").text(num2);
+	d3.select("#scene-people2").text(rolersName2);
 	var commonRolers="";
 	for(var i=0;i<RolerNum;i++)
 	{
@@ -352,7 +363,7 @@ function showSceneTooltip(SceneNumber,pos,str)
 	var x=pos[0]+10;
 	var y=pos[0]+10;
 	var tooltip=d3.select("#scene-tooltip");
-	tooltip.select("#scene-number").text(SceneNumber[0]+","+SceneNumber[1]);
+	//tooltip.select("#scene-number").text(SceneNumber[0]+","+SceneNumber[1]);
 	tooltip.select("#scene-people").text(str);
 	tooltip.attr("class","show")
 			.style("left",x+"px")
