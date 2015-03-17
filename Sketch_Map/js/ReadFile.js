@@ -212,7 +212,7 @@ function djstlEventPath(evetnchoose,eventline,eventId2Num)
 		console.log(distance);
 		for(var i=minNum+1;i<15;i++)
 		{
-			//console.log("adjmat.lenght "+adjmat.lenght);
+			//console.log("adjmat.length "+adjmat.length);
 			if(adjmat[minNum][i]!=0&&distance[minNum]!=-1&&flag[i]==0)
 			{
 				if(distance[i]==-1||distance[minNum]+adjmat[minNum][i]<distance[i])
@@ -296,10 +296,55 @@ function mousePos(e){
         var x,y; 
         var e = e||window.event; 
         return [e.clientX+document.body.scrollLeft+document.documentElement.scrollLeft,e.clientY+document.body.scrollTop+document.documentElement.scrollTop]; 
- }
-function showSceneTooltip(SceneNumber,pos)
+}
+function getCommonRolers(SceneNumber,SceneData,RolerNum,roler2num,num2roler)
 {
-	console.log("showSceneTooltip ..."+SceneNumber);
+	//SceneNumber=[num1,num2]; num1!=num2
+	//SceneData=Geo.json{Points}=dataRoler={number:4,name:neo}
+	var num1=SceneNumber[0];
+	var num2=SceneNumber[1];
+	var rolers1=new Array(RolerNum),rolers2=new Array(RolerNum);
+	
+	for(var i=0;i<RolerNum;i++)
+	{
+		rolers1[i]=0;
+		rolers2[i]=0;
+	}
+	for(var i=0;i<SceneData.length;i++)
+	{
+		console.log("SceneData "+i+" "+SceneData[i].number+" "+SceneData[i].name);
+		if(SceneData[i].number==num1){
+			rolers1[roler2num(SceneData[i].name)]=1;
+		}
+		else if(SceneData[i].number==num2)
+		{
+			rolers2[roler2num(SceneData[i].name)]=1;
+		}
+	}
+	
+	console.log("rolers 1 "+rolers1);
+	console.log("rolers 2 "+rolers2);
+	var commonRolers="";
+	for(var i=0;i<RolerNum;i++)
+	{
+		if(rolers1[i]==1&&rolers2[i]==1)
+		{
+			if(commonRolers=="")
+			{
+				commonRolers=num2roler(i);
+			}
+			else
+			{
+				commonRolers=commonRolers+","+num2roler(i);
+			}
+		}
+	}
+	
+	return commonRolers;
+}
+function showSceneTooltip(SceneNumber,pos,str)
+{
+	console.log("showSceneTooltip ..."+SceneNumber+" "+str);
 	//console.log(d3.mouse(d3.select("body").select("svg")));
 	//x=document.documentElement.scrollLeft;//+event.clientX;
 	//y=document.documentElement.scrollTop;//+event.clientY;
@@ -308,13 +353,13 @@ function showSceneTooltip(SceneNumber,pos)
 	var y=pos[0]+10;
 	var tooltip=d3.select("#scene-tooltip");
 	tooltip.select("#scene-number").text(SceneNumber[0]+","+SceneNumber[1]);
-	tooltip.select("#scene-people").text("neo+smi");
+	tooltip.select("#scene-people").text(str);
 	tooltip.attr("class","show")
 			.style("left",x+"px")
 			.style("top",y+"px");
-	tooltip.on("mouseout",function(d){
+	/* tooltip.on("mouseout",function(d){
 		d3.select(this).attr("class","hidden");
-	});
+	}); */
 }
 d3.json("json//Geo.json", function(error, root) {
     if (error)
@@ -370,7 +415,9 @@ d3.json("json//Geo.json", function(error, root) {
 					
 					//pos=mousePos(e);
 					pos=[400,400];
-					showSceneTooltip(eventchoose,pos);
+					var SceneNumber=[eventId2Num[eventchoose[0]],eventId2Num[eventchoose[1]]];
+					var CommonRolers=getCommonRolers(SceneNumber,dataRoler,14,Nam,num2roler);
+					showSceneTooltip(SceneNumber,pos,CommonRolers);
 				}
 			}
 			else if(eventchoosenum==2){		
