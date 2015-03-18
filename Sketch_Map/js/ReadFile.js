@@ -315,7 +315,7 @@ function getCommonRolers(SceneNumber,SceneData,RolerNum,roler2num,num2roler)
 	var rolersName2="";
 	for(var i=0;i<SceneData.length;i++)
 	{
-		console.log("SceneData "+i+" "+SceneData[i].number+" "+SceneData[i].name);
+		//console.log("SceneData "+i+" "+SceneData[i].number+" "+SceneData[i].name);
 		if(SceneData[i].number==num1){
 			rolers1[roler2num(SceneData[i].name)]=1;
 			if(rolersName1=="")	rolersName1=SceneData[i].name;
@@ -371,6 +371,25 @@ function showSceneTooltip(SceneNumber,pos,str)
 	/* tooltip.on("mouseout",function(d){
 		d3.select(this).attr("class","hidden");
 	}); */
+}
+
+function curvePath(location,projection)
+{
+	var s=new Array(2);
+	s[0]=location[0][0]*2/3+location[1][0]/3;
+	s[1]=location[0][1]*2/3+location[1][1]/3;
+	var e=new Array(2);
+	e[0]=location[1][0]*2/3+location[0][0]/3;
+	e[1]=location[1][1]*2/3+location[0][1]/3;
+	
+	s[0]=s[0]-2;
+	s[1]=s[1]-0;
+	e[1]=e[1]+2;
+	e[1]=e[1]+0;
+	var str="M"+projection(location[0])+" C"+projection(s)+" "+projection(e)+" "+projection(location[1]);
+	console.log(str);
+	//svg_path.attr("d","M"+location[0]+" C"+s+" "+e+" "+location[1]);
+	return str;
 }
 d3.json("json//Geo.json", function(error, root) {
     if (error)
@@ -476,7 +495,14 @@ d3.json("json//Geo.json", function(error, root) {
         })
         .attr("fill", "none")
         .attr("class","time")
-        .attr("d", path)
+        //.attr("d", path)
+		.attr("d",function(d){
+			//var location=[d.coordinates[0],d.coordinates[d.coordinates.length-1]];
+			var location=d.coordinates;
+			console.log("projection ... "+projection(d.coordinates[0])+" "+projection(d.coordinates[1]));
+			console.log("path ... "+path(d));
+			return curvePath(location,projection);
+		})
         .on("mousedown", function (d, i, e) {
             d3.select(this)
                 .attr("display", "none")
